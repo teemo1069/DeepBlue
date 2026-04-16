@@ -239,9 +239,9 @@
   </div>
 
   <div class="admin-bar">
-    <div id="mode-text">唯讀模式</div>
+    <div id="mode-text">正在連接伺服器...</div>
     <div style="display:flex; gap:10px;">
-      <button class="btn btn-primary" id="admin-btn" onclick="openModal('login-modal')">🔐 管理員登入</button>
+      <button class="btn btn-primary" id="admin-btn" style="display:none" onclick="openModal('login-modal')">🔐 管理員登入</button>
       <button class="btn btn-success" id="add-btn" style="display:none" onclick="openModal('add-modal')">➕ 新增項目</button>
       <button class="btn btn-danger" id="logout-btn" style="display:none" onclick="logout()">登出</button>
     </div>
@@ -250,13 +250,12 @@
   <div class="table-wrap">
     <div class="table-header-bar">
       <span>ITEM LIST</span>
-      <input type="text" placeholder="搜尋..." style="background:rgba(0,0,0,0.2); border:1px solid var(--border); color:white; padding:5px 10px; border-radius:5px;" oninput="renderTable(this.value)">
+      <input type="text" id="search-input" placeholder="搜尋..." style="background:rgba(0,0,0,0.2); border:1px solid var(--border); color:white; padding:5px 10px; border-radius:5px;" oninput="renderTable(this.value)">
     </div>
     <div id="table-container"></div>
   </div>
 </div>
 
-<!-- Login Modal -->
 <div class="modal-overlay" id="login-modal" style="display:none">
   <div class="modal">
     <h2>管理員登入</h2>
@@ -269,7 +268,6 @@
   </div>
 </div>
 
-<!-- Add Modal -->
 <div class="modal-overlay" id="add-modal" style="display:none">
   <div class="modal">
     <h2>新增項目</h2>
@@ -287,27 +285,32 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-const firebaseConfig = JSON.parse(__firebase_config);
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'deep-blue-app';
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// 【修正 1】增加 typeof 檢查，避免在沒有注入全域變數的環境中觸發 ReferenceError 導致系統崩潰
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+let app, auth, db;
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+} catch (e) {
+  console.warn("Firebase 初始化參數缺失或異常，請確認是在支援的平台上運行。");
+}
 
 let items = [];
 let isEditMode = false;
 let currentUser = null;
+let unsubscribeSnapshot = null;
 
-// --- 登入邏輯 (你要找的密碼修改處) ---
+// --- 登入邏輯 ---
 window.login = function() {
   const pw = document.getElementById('login-pw').value;
   
-  // ==========================================
-  // 下面這一行 admin123 就是密碼，你可以隨意修改
-  // ==========================================
-  if (pw === "perfume") { 
+  if (pw === "admin123") { 
     isEditMode = true;
     closeModal('login-modal');
     document.getElementById('admin-btn').style.display = 'none';
@@ -330,29 +333,63 @@ window.logout = function() {
   renderTable();
 };
 
-// --- Firebase 初始化 ---
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    currentUser = user;
-    const docRef = doc(db, "artifacts", appId, "public", "data", "items", "main");
-    onSnapshot(docRef, (snap) => {
-      if (snap.exists()) {
-        items = snap.data().items || [];
-      } else {
-        items = [{id: 1, name: "測試項目", qty: 0, note: ""}];
-        saveData();
+// --- Firebase 初始化邏輯 ---
+async function startApp() {
+  if (!auth) return;
+  try {
+    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+      await signInWithCustomToken(auth, __initial_auth_token);
+    } else {
+      await signInAnonymously(auth);
+    }
+    
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        document.getElementById('admin-btn').style.display = 'inline-block';
+        document.getElementById('mode-text').textContent = '唯讀模式';
+        listenToData();
       }
-      renderTable();
-    }, (err) => console.error(err));
-  } else {
-    signInAnonymously(auth);
+    });
+  } catch (err) {
+    console.error("Auth failed:", err);
+    showToast("連線伺服器失敗，請重新整理。");
   }
-});
+}
+
+function listenToData() {
+  if (unsubscribeSnapshot) unsubscribeSnapshot();
+  
+  // 【修正 2】Firebase Document 參照層級必須是「偶數」(Collection -> Doc -> Collection -> Doc)。
+  // 原本的 public/data/main 是 5 層（不合規），修改為 public/main （4 層）。
+  const docRef = doc(db, 'artifacts', appId, 'public', 'main');
+  
+  unsubscribeSnapshot = onSnapshot(docRef, (snap) => {
+    if (snap.exists()) {
+      items = snap.data().items || [];
+    } else {
+      items = [{id: 1, name: "測試項目", qty: 0, note: "歡迎使用系統"}];
+      saveData();
+    }
+    renderTable();
+  }, (err) => {
+    console.error("Firestore error:", err);
+    if (err.code === 'permission-denied') {
+      showToast("權限錯誤：請確保路徑正確。");
+    }
+  });
+}
 
 async function saveData() {
   if (!currentUser) return;
-  const docRef = doc(db, "artifacts", appId, "public", "data", "items", "main");
-  await setDoc(docRef, { items });
+  // 【同步修正】寫入路徑必須與讀取路徑維持一致
+  const docRef = doc(db, 'artifacts', appId, 'public', 'main');
+  try {
+    await setDoc(docRef, { items });
+  } catch (error) {
+    console.error("Save error:", error);
+    showToast("儲存失敗，請檢查權限。");
+  }
 }
 
 window.addItem = function() {
@@ -364,6 +401,12 @@ window.addItem = function() {
   items.push({ id: Date.now(), name, qty, note });
   saveData();
   closeModal('add-modal');
+  
+  // 清空輸入框
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-qty').value = '';
+  document.getElementById('new-note').value = '';
+  
   showToast("新增成功");
 };
 
@@ -376,11 +419,15 @@ window.updateQty = function(id, val) {
   }
 };
 
-window.renderTable = function(search = "") {
-  const container = document.getElementById('table-container');
-  let filtered = items.filter(i => i.name.includes(search));
+window.renderTable = function(search) {
+  // 【修正 3】當 login/logout 沒有傳遞 search 參數時，主動抓取搜尋框的現存文字，避免畫面跟搜尋列不同步。
+  if (typeof search !== 'string') {
+    search = document.getElementById('search-input').value || "";
+  }
   
-  // 核心邏輯：數量最高的排在最上面
+  const container = document.getElementById('table-container');
+  let filtered = items.filter(i => i.name.toLowerCase().includes(search.toLowerCase()));
+  
   filtered.sort((a, b) => b.qty - a.qty);
 
   let html = `<table><thead><tr><th>名稱</th><th>數量</th><th>備註</th></tr></thead><tbody>`;
@@ -403,14 +450,15 @@ window.renderTable = function(search = "") {
 function updateStats() {
   const total = items.length;
   const avg = total ? (items.reduce((a, b) => a + b.qty, 0) / total).toFixed(1) : 0;
-  const top = items.length ? [...items].sort((a, b) => b.qty - a.qty)[0].name : "—";
+  const sorted = [...items].sort((a, b) => b.qty - a.qty);
+  const top = items.length ? sorted[0].name : "—";
   
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-avg').textContent = avg;
   document.getElementById('stat-top').textContent = top;
 }
 
-// UI Helpers
+// UI 控制
 window.openModal = (id) => document.getElementById(id).style.display = 'flex';
 window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 function showToast(m) {
@@ -418,6 +466,10 @@ function showToast(m) {
   t.textContent = m; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
 }
+
+// 啟動程式
+startApp();
+
 </script>
 </body>
 </html>
