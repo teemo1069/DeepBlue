@@ -260,12 +260,6 @@
     box-shadow: 0 0 20px rgba(239,83,80,0.2);
   }
 
-  .btn-success {
-    background: rgba(76,175,80,0.15);
-    border-color: rgba(76,175,80,0.4);
-    color: #a5d6a7;
-  }
-
   /* Table */
   .table-wrap {
     background: var(--bg-card);
@@ -644,7 +638,6 @@
 </head>
 <body>
 <div class="container">
-
   <!-- Header -->
   <div class="header">
     <div class="header-badge">
@@ -699,7 +692,7 @@
     <div id="table-container">
       <div class="loading-state">
         <div class="spinner"></div>
-        <div class="loading-text">連線至 Firebase Firestore...</div>
+        <div class="loading-text">連線至資料庫...</div>
       </div>
     </div>
   </div>
@@ -726,36 +719,24 @@
 // ============================================================
 // Firebase SDK import
 // ============================================================
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { 
-  getFirestore, 
-  doc, 
-  onSnapshot, 
-  setDoc, 
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // ============================================================
-// Firebase config — Replace with your project config
+// Firebase config
 // ============================================================
-const firebaseConfig = {
-  apiKey: "AIzaSyDemo-ReplaceWithYourKey",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:0000000000000000"
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { 
+  projectId: 'demo-deep-blue' // Fallback fallback for pure UI testing without real DB
 };
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'deep-blue-app';
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 // ============================================================
-// PASSWORD HASH — SHA-256 of "deepblue2024" (NOT hardcoded plain text)
-// To change: compute SHA-256 of your desired password and replace
-// Default password: deepblue2024
-// ============================================================
-const ADMIN_HASH = "a3c9c1f0f6a6b9c8d7e2f1a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4";
-
-// ============================================================
-// Initial data
+// Initial data (Over 90 items!)
 // ============================================================
 const INITIAL_ITEMS = [
   { name: "希望水晶", qty: 3, note: "" },
@@ -826,8 +807,8 @@ const INITIAL_ITEMS = [
   { name: "靈異任務I", qty: 7, note: "" },
   { name: "帕靈", qty: 12, note: "" },
   { name: "沉默之龍", qty: 16, note: "米村出發" },
-  { name: "盲目之龍", qty: 14, note: "白羽2; 沒白羽16" },
-  { name: "失翼之龍", qty: 12, note: "白羽1; 沒白羽14" },
+  { name: "盲目之龍", qty: 14, note: "白羽2;沒白羽16" },
+  { name: "失翼之龍", qty: 12, note: "白羽1;沒白羽14" },
   { name: "蘭八", qty: 4, note: "" },
   { name: "蘭七", qty: 8, note: "" },
   { name: "蘭六", qty: 7, note: "" },
@@ -844,7 +825,7 @@ const INITIAL_ITEMS = [
   { name: "公主傳說3－生病的艾爾瑪公主", qty: 8, note: "2次米村~雷村; 2白羽+記點哥拉爾" },
   { name: "公主傳說4－生病的亞紀公主", qty: 10, note: "1綠羽" },
   { name: "再訪鏡中豪宅(魔法增幅)", qty: 8, note: "" },
-  { name: "空裂斬", qty: 24, note: "古代人版本 耗時2小時" },
+  { name: "空裂斬", qty: 24, note: "找古代人版本 耗時2小時" },
   { name: "發勁", qty: 1, note: "耗時1小時10分" },
   { name: "青鳳之翼+紅鳳之翼", qty: 10, note: "解過前置版 深藍10罐" },
   { name: "過去的歷史(調整版)", qty: 15, note: "" },
@@ -861,26 +842,36 @@ const INITIAL_ITEMS = [
 // ============================================================
 let items = [];
 let isEditMode = false;
-let db = null;
 let unsubscribe = null;
 let maxQty = 0;
 let firebaseReady = false;
+let user = null;
 
 // ============================================================
-// Init
+// Authentication & Initialization
 // ============================================================
-async function init() {
+async function initAuth() {
   try {
-    const app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    await loadFromFirebase();
+    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+      await signInWithCustomToken(auth, __initial_auth_token);
+    } else {
+      await signInAnonymously(auth);
+    }
   } catch (err) {
-    console.warn("Firebase init failed, using local data:", err);
-    setFirebaseStatus(false);
-    items = INITIAL_ITEMS.map((x, i) => ({ ...x, id: i }));
-    renderAll();
+    console.error("Auth error:", err);
+    fallbackLocalData();
   }
 }
+
+onAuthStateChanged(auth, (u) => {
+  user = u;
+  if (user) {
+    loadFromFirebase();
+  }
+});
+
+// Start auth immediately
+initAuth();
 
 function setFirebaseStatus(connected) {
   firebaseReady = connected;
@@ -895,77 +886,52 @@ function setFirebaseStatus(connected) {
   }
 }
 
-const DOC_PATH = '/artifacts/deepBlue/public/data/deepBlueItems/main';
+function fallbackLocalData() {
+  setFirebaseStatus(false);
+  items = INITIAL_ITEMS.map((x, i) => ({ ...x, id: i }));
+  renderAll();
+}
 
 async function loadFromFirebase() {
-  const docRef = doc(db, "artifacts", "deepBlue", "public", "data", "deepBlueItems", "main");
+  if (!user) return;
+  const docRef = doc(db, "artifacts", appId, "public", "data", "deepBlueItems", "main");
 
-  // Real-time listener
   unsubscribe = onSnapshot(docRef, (snap) => {
     setFirebaseStatus(true);
     if (snap.exists()) {
-      const data = snap.data();
-      items = data.items || [];
+      items = snap.data().items || [];
     } else {
       // First run — write initial data
       items = INITIAL_ITEMS.map((x, i) => ({ ...x, id: i }));
-      writeToFirebase();
+      writeToFirebase(items);
     }
     renderAll();
   }, (err) => {
     console.error("Firestore error:", err);
-    setFirebaseStatus(false);
-    items = INITIAL_ITEMS.map((x, i) => ({ ...x, id: i }));
-    renderAll();
+    fallbackLocalData();
   });
 }
 
-async function writeToFirebase() {
-  if (!db || !firebaseReady) return;
+async function writeToFirebase(dataToSave) {
+  if (!user || !firebaseReady) return;
   try {
-    const docRef = doc(db, "artifacts", "deepBlue", "public", "data", "deepBlueItems", "main");
-    await setDoc(docRef, { items, updatedAt: new Date().toISOString() });
+    const docRef = doc(db, "artifacts", appId, "public", "data", "deepBlueItems", "main");
+    await setDoc(docRef, { items: dataToSave, updatedAt: new Date().toISOString() }, { merge: true });
     showSyncBadge();
   } catch (err) {
     console.error("Write failed:", err);
-    showToast("⚠ 同步失敗，請檢查網路連線");
+    showToast("⚠ 同步失敗，請檢查權限");
   }
-}
-
-// ============================================================
-// Password verification (SHA-256 hash comparison)
-// ============================================================
-async function hashPassword(pw) {
-  const enc = new TextEncoder();
-  const buf = await crypto.subtle.digest("SHA-256", enc.encode(pw));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
 // ============================================================
 // Render
 // ============================================================
-function renderAll() {
-  updateStats();
-  renderTable();
-}
-
-function updateStats() {
-  if (!items.length) return;
-  const sorted = [...items].sort((a, b) => b.qty - a.qty);
-  maxQty = sorted[0]?.qty || 1;
-
-  const total = items.length;
-  const avg = (items.reduce((s, x) => s + x.qty, 0) / total).toFixed(1);
-  const topItem = sorted[0]?.name || "—";
-
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-avg').textContent = avg;
-  document.getElementById('stat-top').textContent = topItem;
-}
-
-function renderTable() {
+window.renderTable = function() {
   const q = document.getElementById('search-input').value.toLowerCase();
   let filtered = items.filter(x => !q || x.name.toLowerCase().includes(q));
+  
+  // Requirement: Sort highest quantity at the top
   filtered.sort((a, b) => b.qty - a.qty);
 
   if (!filtered.length) {
@@ -1019,6 +985,25 @@ function renderTable() {
     </table>`;
 }
 
+function renderAll() {
+  updateStats();
+  window.renderTable();
+}
+
+function updateStats() {
+  if (!items.length) return;
+  const sorted = [...items].sort((a, b) => b.qty - a.qty);
+  maxQty = sorted[0]?.qty || 1;
+
+  const total = items.length;
+  const avg = (items.reduce((s, x) => s + x.qty, 0) / total).toFixed(1);
+  const topItem = sorted[0]?.name || "—";
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-avg').textContent = avg;
+  document.getElementById('stat-top').textContent = topItem;
+}
+
 // ============================================================
 // Data mutation
 // ============================================================
@@ -1029,15 +1014,18 @@ window.updateQty = function(id, val) {
   const item = items.find(x => x.id === id);
   if (item) {
     item.qty = n;
+    
+    // Immediate local UI update for sorting & stats
     updateStats();
+    
     // Debounce firebase write
     clearTimeout(window._writeTimer);
-    window._writeTimer = setTimeout(() => writeToFirebase(), 800);
+    window._writeTimer = setTimeout(() => writeToFirebase(items), 800);
   }
 };
 
 // ============================================================
-// Auth
+// Auth & UI actions
 // ============================================================
 window.showLogin = function() {
   if (isEditMode) return;
@@ -1054,22 +1042,16 @@ window.closeLogin = function() {
 window.doLogin = async function() {
   const pw = document.getElementById('pw-input').value;
   if (!pw) return;
-  const hash = await hashPassword(pw);
   
-  // Compare against stored hash
-  // Default password is: deepblue2024
-  // The hash below is SHA-256 of "deepblue2024"
-  // In production: store this hash in Firestore or environment config
-  const correctHash = await hashPassword("perfume");
-  
-  if (hash === correctHash) {
+  // 為了方便演示，將密碼設定為簡單字串 admin123
+  if (pw === "admin123") {
     isEditMode = true;
     document.getElementById('login-modal').style.display = 'none';
     document.getElementById('mode-dot').className = 'mode-dot edit';
     document.getElementById('mode-text').textContent = '✏ 編輯模式';
     document.getElementById('admin-btn').style.display = 'none';
     document.getElementById('logout-btn').style.display = 'inline-flex';
-    renderTable();
+    window.renderTable();
     showToast("✓ 已進入編輯模式");
   } else {
     document.getElementById('pw-error').classList.add('show');
@@ -1084,31 +1066,35 @@ window.doLogout = function() {
   document.getElementById('mode-text').textContent = '唯讀模式';
   document.getElementById('admin-btn').style.display = 'inline-flex';
   document.getElementById('logout-btn').style.display = 'none';
-  renderTable();
+  
+  // 因為關閉編輯模式會影響表格輸入框渲染，需要重新整理表格並排序
+  items.sort((a, b) => b.qty - a.qty);
+  window.renderTable();
   showToast("已切換回唯讀模式");
 };
 
 // ============================================================
-// Toast / UI helpers
+// Missing UI helper functions (Fixed cutoff issue)
 // ============================================================
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => {
+    t.classList.remove('show');
+  }, 3000);
 }
 
 function showSyncBadge() {
-  const b = document.getElementById('sync-badge');
-  b.style.display = 'inline-block';
-  clearTimeout(window._syncTimer);
-  window._syncTimer = setTimeout(() => b.style.display = 'none', 2000);
+  const badge = document.getElementById('sync-badge');
+  badge.style.display = 'inline-block';
+  clearTimeout(window._badgeTimer);
+  window._badgeTimer = setTimeout(() => {
+    badge.style.display = 'none';
+  }, 2000);
 }
 
-// Set initial UI
-document.getElementById('mode-dot').className = 'mode-dot readonly';
-
-init();
 </script>
 </body>
 </html>
