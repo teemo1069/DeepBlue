@@ -37,7 +37,6 @@
     overflow-x: hidden;
   }
 
-  /* Background grid */
   body::before {
     content: '';
     position: fixed;
@@ -46,19 +45,6 @@
       linear-gradient(rgba(33,150,243,0.04) 1px, transparent 1px),
       linear-gradient(90deg, rgba(33,150,243,0.04) 1px, transparent 1px);
     background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  body::after {
-    content: '';
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(ellipse at 30% 20%, rgba(21,101,192,0.12) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(0,180,216,0.06) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
   }
@@ -75,7 +61,6 @@
   .header {
     text-align: center;
     padding: 40px 0 32px;
-    position: relative;
   }
 
   .header-badge {
@@ -89,41 +74,16 @@
     font-size: 11px;
     font-family: 'JetBrains Mono', monospace;
     color: var(--accent-cyan);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
     margin-bottom: 20px;
-  }
-
-  .header-badge::before {
-    content: '';
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent-cyan);
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
   }
 
   .header h1 {
     font-size: clamp(24px, 5vw, 42px);
     font-weight: 900;
-    letter-spacing: -0.02em;
-    line-height: 1.1;
     background: linear-gradient(135deg, #e8f4fd 0%, #90caf9 50%, #42a5f5 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
     margin-bottom: 8px;
-  }
-
-  .header-sub {
-    font-size: 13px;
-    color: var(--text-muted);
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 0.05em;
   }
 
   /* Stats */
@@ -135,7 +95,7 @@
   }
 
   @media (max-width: 600px) {
-    .stats-grid { grid-template-columns: 1fr; gap: 10px; }
+    .stats-grid { grid-template-columns: 1fr; }
   }
 
   .stat-card {
@@ -144,28 +104,11 @@
     border-radius: 14px;
     padding: 20px;
     position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s, transform 0.2s;
-  }
-
-  .stat-card:hover {
-    border-color: rgba(33,150,243,0.4);
-    transform: translateY(-2px);
-  }
-
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
   }
 
   .stat-label {
     font-size: 11px;
     color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
     font-family: 'JetBrains Mono', monospace;
     margin-bottom: 10px;
   }
@@ -173,25 +116,10 @@
   .stat-value {
     font-size: 28px;
     font-weight: 700;
-    color: var(--text-primary);
     font-family: 'JetBrains Mono', monospace;
-    line-height: 1;
   }
 
-  .stat-value.highlight {
-    font-size: 18px;
-    color: var(--accent-gold);
-    font-weight: 700;
-  }
-
-  .stat-icon {
-    position: absolute;
-    top: 16px; right: 16px;
-    font-size: 20px;
-    opacity: 0.3;
-  }
-
-  /* Admin bar */
+  /* Controls */
   .admin-bar {
     display: flex;
     align-items: center;
@@ -205,60 +133,19 @@
     border-radius: 12px;
   }
 
-  .mode-indicator {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .mode-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-  }
-
-  .mode-dot.readonly { background: var(--text-muted); }
-  .mode-dot.edit { background: var(--success); animation: pulse 1.5s infinite; }
-
   .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
     padding: 9px 18px;
     border-radius: 8px;
     border: 1px solid;
     font-size: 13px;
-    font-family: 'Noto Sans TC', sans-serif;
-    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
-    white-space: nowrap;
+    font-weight: 500;
   }
 
-  .btn:active { transform: scale(0.96); }
-
-  .btn-primary {
-    background: var(--accent-blue);
-    border-color: var(--accent-bright);
-    color: white;
-  }
-
-  .btn-primary:hover {
-    background: var(--accent-bright);
-    box-shadow: 0 0 20px rgba(33,150,243,0.4);
-  }
-
-  .btn-danger {
-    background: rgba(239,83,80,0.15);
-    border-color: rgba(239,83,80,0.4);
-    color: #ef9a9a;
-  }
-
-  .btn-danger:hover {
-    background: rgba(239,83,80,0.25);
-    box-shadow: 0 0 20px rgba(239,83,80,0.2);
-  }
+  .btn-primary { background: var(--accent-blue); border-color: var(--accent-bright); color: white; }
+  .btn-success { background: rgba(76,175,80,0.15); border-color: rgba(76,175,80,0.4); color: #a5d6a7; }
+  .btn-danger { background: rgba(239,83,80,0.15); border-color: rgba(239,83,80,0.4); color: #ef9a9a; }
 
   /* Table */
   .table-wrap {
@@ -266,7 +153,6 @@
     border: 1px solid var(--border);
     border-radius: 14px;
     overflow: hidden;
-    box-shadow: var(--shadow-blue);
   }
 
   .table-header-bar {
@@ -274,150 +160,24 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
     background: rgba(21,101,192,0.08);
   }
 
-  .table-title {
-    font-size: 13px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--text-secondary);
-    letter-spacing: 0.05em;
-  }
-
-  .search-box {
-    background: rgba(33,150,243,0.08);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 7px 14px;
-    color: var(--text-primary);
-    font-size: 13px;
-    font-family: 'Noto Sans TC', sans-serif;
-    width: 180px;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
-
-  .search-box:focus {
-    border-color: var(--accent-bright);
-    box-shadow: 0 0 12px rgba(33,150,243,0.2);
-  }
-
-  .search-box::placeholder { color: var(--text-muted); }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  thead th {
-    padding: 12px 20px;
-    text-align: left;
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    background: rgba(5,15,30,0.6);
-    border-bottom: 1px solid var(--border);
-    font-weight: 600;
-  }
-
-  thead th.num { text-align: right; }
-
-  tbody tr {
-    border-bottom: 1px solid rgba(26,58,92,0.5);
-    transition: background 0.15s;
-    animation: rowFadeIn 0.3s ease both;
-  }
-
-  @keyframes rowFadeIn {
-    from { opacity: 0; transform: translateX(-8px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  tbody tr:hover { background: rgba(33,150,243,0.06); }
-  tbody tr:last-child { border-bottom: none; }
-
-  td {
-    padding: 12px 20px;
-    font-size: 14px;
-    color: var(--text-primary);
-    vertical-align: middle;
-  }
-
-  .rank-cell {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--text-muted);
-    width: 44px;
-    text-align: right;
-    padding-right: 8px;
-  }
-
-  .rank-1 { color: var(--accent-gold); font-weight: 700; }
-  .rank-2 { color: #b0bec5; }
-  .rank-3 { color: #cd7f32; }
-
-  .name-cell { font-weight: 500; }
-
-  .qty-cell {
-    text-align: right;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--accent-bright);
-    white-space: nowrap;
-  }
-
-  .qty-bar-cell {
-    width: 160px;
-    padding-right: 20px;
-  }
-
-  .qty-bar-wrap {
-    background: rgba(33,150,243,0.1);
-    border-radius: 4px;
-    height: 6px;
-    overflow: hidden;
-  }
-
-  .qty-bar {
-    height: 100%;
-    border-radius: 4px;
-    background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
-    transition: width 0.5s ease;
-  }
+  table { width: 100%; border-collapse: collapse; }
+  th { padding: 12px 20px; text-align: left; font-size: 11px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+  td { padding: 12px 20px; font-size: 14px; border-bottom: 1px solid rgba(26,58,92,0.5); }
 
   .qty-input {
     background: rgba(33,150,243,0.12);
     border: 1px solid var(--accent-blue);
     border-radius: 6px;
     color: var(--accent-bright);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    font-weight: 600;
     width: 80px;
     padding: 4px 10px;
     text-align: right;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
   }
 
-  .qty-input:focus {
-    border-color: var(--accent-cyan);
-    box-shadow: 0 0 10px rgba(0,180,216,0.3);
-  }
-
-  /* Note cell */
-  .note-cell {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-style: italic;
-    max-width: 200px;
-  }
-
-  /* Modal */
+  /* Modals */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -427,674 +187,237 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    animation: fadeIn 0.2s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
   }
 
   .modal {
     background: var(--bg-card);
-    border: 1px solid rgba(33,150,243,0.3);
+    border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 36px;
-    width: 100%;
+    padding: 30px;
+    width: 90%;
     max-width: 400px;
-    box-shadow: 0 0 80px rgba(33,150,243,0.2);
-    animation: slideUp 0.25s ease;
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .modal h2 {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 6px;
-    color: var(--text-primary);
-  }
-
-  .modal p {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-bottom: 24px;
   }
 
   .modal-input {
     width: 100%;
     background: rgba(33,150,243,0.08);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 16px;
-    color: var(--text-primary);
-    font-size: 15px;
-    font-family: 'JetBrains Mono', monospace;
-    outline: none;
-    margin-bottom: 16px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    letter-spacing: 0.1em;
+    padding: 12px;
+    color: white;
+    margin-bottom: 15px;
+    border-radius: 8px;
   }
 
-  .modal-input:focus {
-    border-color: var(--accent-bright);
-    box-shadow: 0 0 16px rgba(33,150,243,0.25);
-  }
-
-  .modal-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-  }
-
-  .btn-cancel {
-    background: transparent;
-    border-color: var(--border);
-    color: var(--text-muted);
-  }
-
-  .btn-cancel:hover { border-color: var(--text-muted); color: var(--text-primary); }
-
-  .error-msg {
-    font-size: 12px;
-    color: var(--danger);
-    margin-bottom: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    display: none;
-  }
-
-  .error-msg.show { display: block; }
-
-  /* Loading */
-  .loading-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px;
-    gap: 20px;
-  }
-
-  .spinner {
-    width: 40px; height: 40px;
-    border: 3px solid rgba(33,150,243,0.15);
-    border-top-color: var(--accent-bright);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  .loading-text {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--text-muted);
-    animation: blink 1.5s infinite;
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  /* Status toast */
   .toast {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--bg-card);
-    border: 1px solid rgba(76,175,80,0.4);
-    color: #a5d6a7;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 13px;
-    font-family: 'JetBrains Mono', monospace;
-    z-index: 200;
+    bottom: 20px;
+    right: 20px;
+    background: #0d2137;
+    border: 1px solid var(--success);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
     opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s;
-    pointer-events: none;
+    transition: 0.3s;
+    z-index: 1000;
   }
-
-  .toast.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .firebase-status {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--text-muted);
-    padding: 6px 12px;
-    background: rgba(33,150,243,0.06);
-    border-radius: 6px;
-    border: 1px solid var(--border);
-  }
-
-  .firebase-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--text-muted);
-  }
-
-  .firebase-dot.connected { background: var(--success); animation: pulse 2s infinite; }
-
-  @media (max-width: 640px) {
-    .qty-bar-cell, .note-cell { display: none; }
-    .search-box { width: 130px; }
-    .stat-value { font-size: 22px; }
-  }
-
-  .note-tag {
-    display: inline-block;
-    font-size: 10px;
-    background: rgba(33,150,243,0.12);
-    border: 1px solid rgba(33,150,243,0.2);
-    border-radius: 4px;
-    padding: 1px 6px;
-    color: var(--text-muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 180px;
-  }
-
-  .top-badge {
-    display: inline-block;
-    width: 18px; height: 18px;
-    line-height: 18px;
-    text-align: center;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 700;
-    margin-right: 4px;
-    vertical-align: middle;
-  }
-
-  .top-1 { background: rgba(255,213,79,0.2); color: var(--accent-gold); border: 1px solid rgba(255,213,79,0.4); }
-  .top-2 { background: rgba(176,190,197,0.15); color: #b0bec5; border: 1px solid rgba(176,190,197,0.3); }
-  .top-3 { background: rgba(205,127,50,0.15); color: #cd9b6e; border: 1px solid rgba(205,127,50,0.3); }
-
-  .sync-indicator {
-    font-size: 11px;
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--accent-cyan);
-    animation: fadeIn 0.3s ease;
-    padding: 4px 10px;
-    background: rgba(0,180,216,0.08);
-    border-radius: 6px;
-    border: 1px solid rgba(0,180,216,0.2);
-  }
+  .toast.show { opacity: 1; }
 </style>
 </head>
 <body>
+
 <div class="container">
-  <!-- Header -->
   <div class="header">
-    <div class="header-badge">
-      <span>DEEP BLUE SYSTEM</span>
-      <span id="firebase-status-badge" class="firebase-status">
-        <span class="firebase-dot" id="firebase-dot"></span>
-        <span id="firebase-status-text">連線中...</span>
-      </span>
-    </div>
+    <div class="header-badge">DEEP BLUE CLOUD SYSTEM</div>
     <h1>深藍數量雲端管理系統</h1>
-    <div class="header-sub">DEEP BLUE QUANTITY CLOUD MANAGEMENT SYSTEM</div>
   </div>
 
-  <!-- Stats -->
   <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon">📦</div>
-      <div class="stat-label">項目總數</div>
-      <div class="stat-value" id="stat-total">—</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">📊</div>
-      <div class="stat-label">平均使用數量</div>
-      <div class="stat-value" id="stat-avg">—</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon">🏆</div>
-      <div class="stat-label">目前數量最高</div>
-      <div class="stat-value highlight" id="stat-top">—</div>
-    </div>
+    <div class="stat-card"><div class="stat-label">項目總數</div><div class="stat-value" id="stat-total">0</div></div>
+    <div class="stat-card"><div class="stat-label">平均數量</div><div class="stat-value" id="stat-avg">0</div></div>
+    <div class="stat-card"><div class="stat-label">最高數量</div><div class="stat-value" style="color:var(--accent-gold)" id="stat-top">—</div></div>
   </div>
 
-  <!-- Admin bar -->
   <div class="admin-bar">
-    <div class="mode-indicator">
-      <span class="mode-dot" id="mode-dot"></span>
-      <span id="mode-text">唯讀模式</span>
-    </div>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <span id="sync-badge" class="sync-indicator" style="display:none;">● 已同步</span>
-      <button class="btn btn-primary" id="admin-btn" onclick="showLogin()">🔐 管理登入</button>
-      <button class="btn btn-danger" id="logout-btn" onclick="doLogout()" style="display:none;">登出編輯模式</button>
+    <div id="mode-text">唯讀模式</div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-primary" id="admin-btn" onclick="openModal('login-modal')">🔐 管理員登入</button>
+      <button class="btn btn-success" id="add-btn" style="display:none" onclick="openModal('add-modal')">➕ 新增項目</button>
+      <button class="btn btn-danger" id="logout-btn" style="display:none" onclick="logout()">登出</button>
     </div>
   </div>
 
-  <!-- Table -->
   <div class="table-wrap">
     <div class="table-header-bar">
-      <span class="table-title">ITEMS — SORTED BY QUANTITY DESC</span>
-      <input class="search-box" type="text" placeholder="🔍 搜尋項目..." id="search-input" oninput="renderTable()">
+      <span>ITEM LIST</span>
+      <input type="text" placeholder="搜尋..." style="background:rgba(0,0,0,0.2); border:1px solid var(--border); color:white; padding:5px 10px; border-radius:5px;" oninput="renderTable(this.value)">
     </div>
-    <div id="table-container">
-      <div class="loading-state">
-        <div class="spinner"></div>
-        <div class="loading-text">連線至資料庫...</div>
-      </div>
-    </div>
+    <div id="table-container"></div>
   </div>
 </div>
 
 <!-- Login Modal -->
-<div class="modal-overlay" id="login-modal" style="display:none;">
+<div class="modal-overlay" id="login-modal" style="display:none">
   <div class="modal">
-    <h2>🔐 管理員登入</h2>
-    <p>請輸入管理員密碼以進入編輯模式</p>
-    <input class="modal-input" type="password" id="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-    <div class="error-msg" id="pw-error">⚠ 密碼錯誤，請重試</div>
-    <div class="modal-actions">
-      <button class="btn btn-cancel" onclick="closeLogin()">取消</button>
-      <button class="btn btn-primary" onclick="doLogin()">確認登入</button>
+    <h2>管理員登入</h2>
+    <p style="color:var(--text-muted); font-size:12px; margin-bottom:15px;">請輸入密碼以啟用編輯與新增功能</p>
+    <input type="password" id="login-pw" class="modal-input" placeholder="請輸入密碼">
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn" onclick="closeModal('login-modal')">取消</button>
+      <button class="btn btn-primary" onclick="login()">登入</button>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
+<!-- Add Modal -->
+<div class="modal-overlay" id="add-modal" style="display:none">
+  <div class="modal">
+    <h2>新增項目</h2>
+    <input type="text" id="new-name" class="modal-input" placeholder="項目名稱">
+    <input type="number" id="new-qty" class="modal-input" placeholder="初始數量">
+    <input type="text" id="new-note" class="modal-input" placeholder="備註 (選填)">
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn" onclick="closeModal('add-modal')">取消</button>
+      <button class="btn btn-success" onclick="addItem()">確認新增</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
 
 <script type="module">
-// ============================================================
-// Firebase SDK import
-// ============================================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, doc, onSnapshot, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// ============================================================
-// Firebase config
-// ============================================================
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { 
-  projectId: 'demo-deep-blue' // Fallback fallback for pure UI testing without real DB
-};
+const firebaseConfig = JSON.parse(__firebase_config);
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'deep-blue-app';
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ============================================================
-// Initial data (Over 90 items!)
-// ============================================================
-const INITIAL_ITEMS = [
-  { name: "希望水晶", qty: 3, note: "" },
-  { name: "勇者水晶", qty: 7, note: "" },
-  { name: "消王", qty: 8, note: "" },
-  { name: "長章", qty: 8, note: "" },
-  { name: "冰宮殿的回憶", qty: 4, note: "" },
-  { name: "砂之塔的記憶", qty: 7, note: "" },
-  { name: "火炎谷的追憶", qty: 9, note: "" },
-  { name: "彩證", qty: 20, note: "" },
-  { name: "殷紅", qty: 8, note: "" },
-  { name: "山溝", qty: 8, note: "3+2+3" },
-  { name: "晴空下的迷子", qty: 10, note: "" },
-  { name: "樹精長老", qty: 2, note: "" },
-  { name: "神獸", qty: 3, note: "" },
-  { name: "由頭雙王", qty: 6, note: "" },
-  { name: "S階(紅線、藍線)", qty: 8, note: "" },
-  { name: "S階(黃線、綠線)", qty: 3, note: "" },
-  { name: "普一", qty: 4, note: "" },
-  { name: "普二", qty: 12, note: "" },
-  { name: "普三", qty: 14, note: "" },
-  { name: "普四", qty: 10, note: "從普城出發13" },
-  { name: "普五", qty: 8, note: "" },
-  { name: "普六", qty: 20, note: "" },
-  { name: "羈絆+多拉", qty: 15, note: "" },
-  { name: "羈絆+多拉(傳點)", qty: 10, note: "" },
-  { name: "普1+2+羈絆+多拉", qty: 23, note: "" },
-  { name: "波羅", qty: 11, note: "" },
-  { name: "阿卡", qty: 5, note: "" },
-  { name: "F4", qty: 3, note: "" },
-  { name: "無民者", qty: 14, note: "" },
-  { name: "搶救GM", qty: 5, note: "" },
-  { name: "盜賊就職", qty: 2, note: "" },
-  { name: "坎村記點", qty: 5, note: "" },
-  { name: "爆彈就職(阿凱出發)", qty: 13, note: "" },
-  { name: "梅香", qty: 2, note: "" },
-  { name: "忍者就職", qty: 1, note: "" },
-  { name: "嵐之密傳書(忍貓迷宮)", qty: 5, note: "" },
-  { name: "精神衝擊波", qty: 6, note: "" },
-  { name: "5C武(刀雞車跳車)", qty: 8, note: "" },
-  { name: "5C防(刀雞車跳車)", qty: 8, note: "" },
-  { name: "神秘的私房菜", qty: 7, note: "" },
-  { name: "塞拉伯特洞窟", qty: 4, note: "" },
-  { name: "世改(25F)", qty: 14, note: "" },
-  { name: "神域的使者", qty: 13, note: "" },
-  { name: "樹海V技", qty: 2, note: "" },
-  { name: "樹海V技+抗技", qty: 4, note: "" },
-  { name: "誘拐事件(療傷藥)", qty: 6, note: "" },
-  { name: "古代龍族傳說", qty: 10, note: "" },
-  { name: "朝日村", qty: 3, note: "" },
-  { name: "深淵", qty: 8, note: "" },
-  { name: "詢問之地", qty: 12, note: "" },
-  { name: "黑白龍城", qty: 8, note: "" },
-  { name: "彩葉草之戀王前", qty: 30, note: "" },
-  { name: "塔一", qty: 9, note: "" },
-  { name: "塔二", qty: 8, note: "" },
-  { name: "塔三", qty: 7, note: "" },
-  { name: "塔四", qty: 7, note: "" },
-  { name: "塔五(有船票)", qty: 3, note: "" },
-  { name: "塔六(有火焰紋章)", qty: 5, note: "沒有火焰紋章10" },
-  { name: "森林中的祭壇", qty: 7, note: "" },
-  { name: "學因果", qty: 6, note: "" },
-  { name: "風洞", qty: 3, note: "" },
-  { name: "土洞", qty: 3, note: "" },
-  { name: "水洞", qty: 7, note: "" },
-  { name: "火洞", qty: 6, note: "" },
-  { name: "法爾肯", qty: 6, note: "" },
-  { name: "靈異任務I", qty: 7, note: "" },
-  { name: "帕靈", qty: 12, note: "" },
-  { name: "沉默之龍", qty: 16, note: "米村出發" },
-  { name: "盲目之龍", qty: 14, note: "白羽2;沒白羽16" },
-  { name: "失翼之龍", qty: 12, note: "白羽1;沒白羽14" },
-  { name: "蘭八", qty: 4, note: "" },
-  { name: "蘭七", qty: 8, note: "" },
-  { name: "蘭六", qty: 7, note: "" },
-  { name: "蘭五", qty: 10, note: "" },
-  { name: "蘭四", qty: 14, note: "" },
-  { name: "蘭三", qty: 22, note: "" },
-  { name: "蘭二", qty: 8, note: "" },
-  { name: "蘭一", qty: 7, note: "" },
-  { name: "崁村記點", qty: 4, note: "" },
-  { name: "士兵新技能-戰鬥號令", qty: 11, note: "" },
-  { name: "希望之子", qty: 10, note: "1黃羽+記點哥拉爾+米村傳點" },
-  { name: "公主傳說1－通緝令", qty: 2, note: "2綠羽+2黃羽+記點哥拉爾" },
-  { name: "公主傳說2－月待花開", qty: 2, note: "1黃羽+記點哥拉爾+米村傳點" },
-  { name: "公主傳說3－生病的艾爾瑪公主", qty: 8, note: "2次米村~雷村; 2白羽+記點哥拉爾" },
-  { name: "公主傳說4－生病的亞紀公主", qty: 10, note: "1綠羽" },
-  { name: "再訪鏡中豪宅(魔法增幅)", qty: 8, note: "" },
-  { name: "空裂斬", qty: 24, note: "找古代人版本 耗時2小時" },
-  { name: "發勁", qty: 1, note: "耗時1小時10分" },
-  { name: "青鳳之翼+紅鳳之翼", qty: 10, note: "解過前置版 深藍10罐" },
-  { name: "過去的歷史(調整版)", qty: 15, note: "" },
-  { name: "鬼王的婚禮", qty: 11, note: "" },
-  { name: "哈村", qty: 3, note: "" },
-  { name: "巴別塔", qty: 21, note: "" },
-  { name: "芙蕾亞的番茄賊", qty: 7, note: "" },
-  { name: "強化獵殺 無名者", qty: 12, note: "" },
-  { name: "不死系座騎", qty: 2, note: "" }
-];
-
-// ============================================================
-// App state
-// ============================================================
 let items = [];
 let isEditMode = false;
-let unsubscribe = null;
-let maxQty = 0;
-let firebaseReady = false;
-let user = null;
+let currentUser = null;
 
-// ============================================================
-// Authentication & Initialization
-// ============================================================
-async function initAuth() {
-  try {
-    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-      await signInWithCustomToken(auth, __initial_auth_token);
-    } else {
-      await signInAnonymously(auth);
-    }
-  } catch (err) {
-    console.error("Auth error:", err);
-    fallbackLocalData();
+// --- 登入邏輯 (你要找的密碼修改處) ---
+window.login = function() {
+  const pw = document.getElementById('login-pw').value;
+  
+  // ==========================================
+  // 下面這一行 admin123 就是密碼，你可以隨意修改
+  // ==========================================
+  if (pw === "perfume") { 
+    isEditMode = true;
+    closeModal('login-modal');
+    document.getElementById('admin-btn').style.display = 'none';
+    document.getElementById('add-btn').style.display = 'inline-block';
+    document.getElementById('logout-btn').style.display = 'inline-block';
+    document.getElementById('mode-text').textContent = '✏️ 編輯模式';
+    showToast("登入成功！已開啟編輯權限");
+    renderTable();
+  } else {
+    showToast("密碼錯誤！");
   }
-}
+};
 
-onAuthStateChanged(auth, (u) => {
-  user = u;
+window.logout = function() {
+  isEditMode = false;
+  document.getElementById('admin-btn').style.display = 'inline-block';
+  document.getElementById('add-btn').style.display = 'none';
+  document.getElementById('logout-btn').style.display = 'none';
+  document.getElementById('mode-text').textContent = '唯讀模式';
+  renderTable();
+};
+
+// --- Firebase 初始化 ---
+onAuthStateChanged(auth, (user) => {
   if (user) {
-    loadFromFirebase();
+    currentUser = user;
+    const docRef = doc(db, "artifacts", appId, "public", "data", "items", "main");
+    onSnapshot(docRef, (snap) => {
+      if (snap.exists()) {
+        items = snap.data().items || [];
+      } else {
+        items = [{id: 1, name: "測試項目", qty: 0, note: ""}];
+        saveData();
+      }
+      renderTable();
+    }, (err) => console.error(err));
+  } else {
+    signInAnonymously(auth);
   }
 });
 
-// Start auth immediately
-initAuth();
-
-function setFirebaseStatus(connected) {
-  firebaseReady = connected;
-  const dot = document.getElementById('firebase-dot');
-  const txt = document.getElementById('firebase-status-text');
-  if (connected) {
-    dot.className = 'firebase-dot connected';
-    txt.textContent = 'Firebase 已連線';
-  } else {
-    dot.className = 'firebase-dot';
-    txt.textContent = '本地模式';
-  }
+async function saveData() {
+  if (!currentUser) return;
+  const docRef = doc(db, "artifacts", appId, "public", "data", "items", "main");
+  await setDoc(docRef, { items });
 }
 
-function fallbackLocalData() {
-  setFirebaseStatus(false);
-  items = INITIAL_ITEMS.map((x, i) => ({ ...x, id: i }));
-  renderAll();
-}
-
-async function loadFromFirebase() {
-  if (!user) return;
-  const docRef = doc(db, "artifacts", appId, "public", "data", "deepBlueItems", "main");
-
-  unsubscribe = onSnapshot(docRef, (snap) => {
-    setFirebaseStatus(true);
-    if (snap.exists()) {
-      items = snap.data().items || [];
-    } else {
-      // First run — write initial data
-      items = INITIAL_ITEMS.map((x, i) => ({ ...x, id: i }));
-      writeToFirebase(items);
-    }
-    renderAll();
-  }, (err) => {
-    console.error("Firestore error:", err);
-    fallbackLocalData();
-  });
-}
-
-async function writeToFirebase(dataToSave) {
-  if (!user || !firebaseReady) return;
-  try {
-    const docRef = doc(db, "artifacts", appId, "public", "data", "deepBlueItems", "main");
-    await setDoc(docRef, { items: dataToSave, updatedAt: new Date().toISOString() }, { merge: true });
-    showSyncBadge();
-  } catch (err) {
-    console.error("Write failed:", err);
-    showToast("⚠ 同步失敗，請檢查權限");
-  }
-}
-
-// ============================================================
-// Render
-// ============================================================
-window.renderTable = function() {
-  const q = document.getElementById('search-input').value.toLowerCase();
-  let filtered = items.filter(x => !q || x.name.toLowerCase().includes(q));
+window.addItem = function() {
+  const name = document.getElementById('new-name').value;
+  const qty = parseInt(document.getElementById('new-qty').value) || 0;
+  const note = document.getElementById('new-note').value;
+  if (!name) return showToast("請輸入名稱");
   
-  // Requirement: Sort highest quantity at the top
+  items.push({ id: Date.now(), name, qty, note });
+  saveData();
+  closeModal('add-modal');
+  showToast("新增成功");
+};
+
+window.updateQty = function(id, val) {
+  const item = items.find(i => i.id === id);
+  if (item) {
+    item.qty = parseInt(val) || 0;
+    saveData();
+    updateStats();
+  }
+};
+
+window.renderTable = function(search = "") {
+  const container = document.getElementById('table-container');
+  let filtered = items.filter(i => i.name.includes(search));
+  
+  // 核心邏輯：數量最高的排在最上面
   filtered.sort((a, b) => b.qty - a.qty);
 
-  if (!filtered.length) {
-    document.getElementById('table-container').innerHTML = `
-      <div class="loading-state">
-        <div style="font-size:32px;margin-bottom:12px;">🔍</div>
-        <div class="loading-text">找不到符合的項目</div>
-      </div>`;
-    return;
-  }
-
-  const rows = filtered.map((item, idx) => {
-    const rank = idx + 1;
-    const pct = maxQty > 0 ? Math.round((item.qty / maxQty) * 100) : 0;
-    let rankBadge = `<span style="color:var(--text-muted);font-family:JetBrains Mono,monospace;font-size:12px;">${rank}</span>`;
-    if (rank === 1) rankBadge = `<span class="top-badge top-1">1</span>`;
-    if (rank === 2) rankBadge = `<span class="top-badge top-2">2</span>`;
-    if (rank === 3) rankBadge = `<span class="top-badge top-3">3</span>`;
-
-    const noteHtml = item.note ? `<span class="note-tag" title="${item.note}">${item.note}</span>` : `<span style="color:var(--border)">—</span>`;
-    
-    const qtyHtml = isEditMode
-      ? `<input class="qty-input" type="number" min="0" value="${item.qty}" 
-           onchange="updateQty(${item.id}, this.value)" 
-           oninput="updateQty(${item.id}, this.value)">`
-      : `<span style="color:var(--accent-bright);font-family:JetBrains Mono,monospace;font-size:15px;font-weight:600;">${item.qty}</span>`;
-
-    return `<tr>
-      <td class="rank-cell">${rankBadge}</td>
-      <td class="name-cell">${item.name}</td>
-      <td class="qty-cell">${qtyHtml}</td>
-      <td class="qty-bar-cell">
-        <div class="qty-bar-wrap"><div class="qty-bar" style="width:${pct}%"></div></div>
-      </td>
-      <td class="note-cell">${noteHtml}</td>
+  let html = `<table><thead><tr><th>名稱</th><th>數量</th><th>備註</th></tr></thead><tbody>`;
+  filtered.forEach(item => {
+    const qtyField = isEditMode 
+      ? `<input type="number" class="qty-input" value="${item.qty}" onchange="updateQty(${item.id}, this.value)">`
+      : `<span style="color:var(--accent-bright); font-weight:bold;">${item.qty}</span>`;
+      
+    html += `<tr>
+      <td>${item.name}</td>
+      <td>${qtyField}</td>
+      <td style="color:var(--text-muted); font-size:12px;">${item.note || '—'}</td>
     </tr>`;
-  }).join('');
-
-  document.getElementById('table-container').innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th style="width:44px;">#</th>
-          <th>項目名稱</th>
-          <th class="num">使用數量</th>
-          <th class="qty-bar-cell"></th>
-          <th class="note-cell">備註</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-}
-
-function renderAll() {
+  });
+  html += `</tbody></table>`;
+  container.innerHTML = html;
   updateStats();
-  window.renderTable();
-}
+};
 
 function updateStats() {
-  if (!items.length) return;
-  const sorted = [...items].sort((a, b) => b.qty - a.qty);
-  maxQty = sorted[0]?.qty || 1;
-
   const total = items.length;
-  const avg = (items.reduce((s, x) => s + x.qty, 0) / total).toFixed(1);
-  const topItem = sorted[0]?.name || "—";
-
+  const avg = total ? (items.reduce((a, b) => a + b.qty, 0) / total).toFixed(1) : 0;
+  const top = items.length ? [...items].sort((a, b) => b.qty - a.qty)[0].name : "—";
+  
   document.getElementById('stat-total').textContent = total;
   document.getElementById('stat-avg').textContent = avg;
-  document.getElementById('stat-top').textContent = topItem;
+  document.getElementById('stat-top').textContent = top;
 }
 
-// ============================================================
-// Data mutation
-// ============================================================
-window.updateQty = function(id, val) {
-  if (!isEditMode) return;
-  const n = parseInt(val, 10);
-  if (isNaN(n) || n < 0) return;
-  const item = items.find(x => x.id === id);
-  if (item) {
-    item.qty = n;
-    
-    // Immediate local UI update for sorting & stats
-    updateStats();
-    
-    // Debounce firebase write
-    clearTimeout(window._writeTimer);
-    window._writeTimer = setTimeout(() => writeToFirebase(items), 800);
-  }
-};
-
-// ============================================================
-// Auth & UI actions
-// ============================================================
-window.showLogin = function() {
-  if (isEditMode) return;
-  document.getElementById('login-modal').style.display = 'flex';
-  document.getElementById('pw-input').value = '';
-  document.getElementById('pw-error').classList.remove('show');
-  setTimeout(() => document.getElementById('pw-input').focus(), 100);
-};
-
-window.closeLogin = function() {
-  document.getElementById('login-modal').style.display = 'none';
-};
-
-window.doLogin = async function() {
-  const pw = document.getElementById('pw-input').value;
-  if (!pw) return;
-  
-  // 為了方便演示，將密碼設定為簡單字串 admin123
-  if (pw === "admin123") {
-    isEditMode = true;
-    document.getElementById('login-modal').style.display = 'none';
-    document.getElementById('mode-dot').className = 'mode-dot edit';
-    document.getElementById('mode-text').textContent = '✏ 編輯模式';
-    document.getElementById('admin-btn').style.display = 'none';
-    document.getElementById('logout-btn').style.display = 'inline-flex';
-    window.renderTable();
-    showToast("✓ 已進入編輯模式");
-  } else {
-    document.getElementById('pw-error').classList.add('show');
-    document.getElementById('pw-input').value = '';
-    document.getElementById('pw-input').focus();
-  }
-};
-
-window.doLogout = function() {
-  isEditMode = false;
-  document.getElementById('mode-dot').className = 'mode-dot readonly';
-  document.getElementById('mode-text').textContent = '唯讀模式';
-  document.getElementById('admin-btn').style.display = 'inline-flex';
-  document.getElementById('logout-btn').style.display = 'none';
-  
-  // 因為關閉編輯模式會影響表格輸入框渲染，需要重新整理表格並排序
-  items.sort((a, b) => b.qty - a.qty);
-  window.renderTable();
-  showToast("已切換回唯讀模式");
-};
-
-// ============================================================
-// Missing UI helper functions (Fixed cutoff issue)
-// ============================================================
-function showToast(msg) {
+// UI Helpers
+window.openModal = (id) => document.getElementById(id).style.display = 'flex';
+window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+function showToast(m) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(() => {
-    t.classList.remove('show');
-  }, 3000);
+  t.textContent = m; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
-
-function showSyncBadge() {
-  const badge = document.getElementById('sync-badge');
-  badge.style.display = 'inline-block';
-  clearTimeout(window._badgeTimer);
-  window._badgeTimer = setTimeout(() => {
-    badge.style.display = 'none';
-  }, 2000);
-}
-
 </script>
 </body>
 </html>
